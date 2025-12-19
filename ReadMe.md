@@ -10,14 +10,14 @@ Practical Tips from a Mentor
 
 | Tip | Why it matters |
 |-----|----------------|
-| **Keep the EMA‑alpha small (≤ 0.1)** for *stable* memory updates. --|  Large α makes the short‑term vectors drift too fast and destroys the stability of the codebook. 
-| **Use a decayed learning‑rate for the goal vector** – e.g., `goal_lr = base_lr * exp(-step/1000)`. --| This prevents the goal from “over‑fitting” to recent noise. 
+| **Keep the EMA‑alpha small (≤ 0.1)** for *stable* memory updates. |  Large α makes the short‑term vectors drift too fast and destroys the stability of the codebook. 
+| **Use a decayed learning‑rate for the goal vector** – e.g., `goal_lr = base_lr * exp(-step/1000)`. | This prevents the goal from “over‑fitting” to recent noise. 
 | **Prune the long‑term codebook aggressively** (`max_entries` ≈ 100‑200). --| When the codebook gets too big, the `recall` operation becomes expensive and the memory footprint blows up. 
-| **Version the cartridge** – prepend a short hash of the *model checkpoint* to the JSON filename. --| That way you can tell at a glance if the cartridge came from a different training run. 
-| **Don’t forget the tokenizer alignment** –-| if you switch from a BPE tokenizer to a character‑level tokenizer, you must rebuild the `tokenize`/`detokenize` pipelines *and* re‑encode all stored embeddings accordingly.
-| **Log the EMA‑alpha and the energy** for every `add`. --| Over time you’ll see a clear “energy curve” that tells you whether the agent is becoming more confident or just spamming random tokens. 
-| **When swapping agents, also swap the token‑izer** –| otherwise the integer IDs you saved in memory will no longer map to the same characters. --| Keep a `tokenizer_state.json` alongside the cartridge and load it together. 
-| **If you want multi‑agent collaboration**, -| give every agent its own `UnifiedMemory` but share a *global* long‑term codebook that lives in a central process (e.g., a server process). --| Each agent can query that shared store via an async RPC. 
+| **Version the cartridge** – prepend a short hash of the *model checkpoint* to the JSON filename. | That way you can tell at a glance if the cartridge came from a different training run. 
+| **Don’t forget the tokenizer alignment** | if you switch from a BPE tokenizer to a character‑level tokenizer, you must rebuild the `tokenize`/`detokenize` pipelines *and* re‑encode all stored embeddings accordingly.
+| **Log the EMA‑alpha and the energy** for every `add`.  Over time you’ll see a clear “energy curve” that tells you whether the agent is becoming more confident or just spamming random tokens. 
+| **When swapping agents, also swap the token‑izer** otherwise the integer IDs you saved in memory will no longer map to the same characters. --| Keep a `tokenizer_state.json` alongside the cartridge and load it together. 
+| **If you want multi‑agent collaboration**, give every agent its own `UnifiedMemory` but share a *global* long‑term codebook that lives in a central process (e.g., a server process). --| Each agent can query that shared store via an async RPC. 
 | **Testing** – before you ship a cartridge, run a quick sanity‑check: load it on a different machine, generate a few tokens, and verify that the *energy distribution* looks similar to the original. --| A huge deviation usually means a mismatch in the tokenizer or a broken EMA update. 
 
 ## Table of Contents  
